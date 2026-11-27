@@ -1,0 +1,67 @@
+name: OpenAgentHand
+options:
+  deploymentTarget:
+    iOS: "18.0"
+    macOS: "15.0"
+packages:
+  OpenAgentHand:
+    path: .
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    GENERATE_INFOPLIST_FILE: YES
+    INFOPLIST_KEY_CFBundleDisplayName: Open Agent Hand
+    INFOPLIST_KEY_NSCameraUsageDescription: Open Agent Hand uses your camera to detect hand gestures on this device.
+targets:
+  OpenAgentHand:
+    type: application
+    platform: iOS
+    sources: App
+    info:
+      path: build/iOS-Info.plist
+      properties:
+        NSCameraUsageDescription: Open Agent Hand uses your camera to detect hand gestures on this device.
+        NSLocalNetworkUsageDescription: Connect to the event feed you choose.
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
+        UILaunchScreen: {}
+    dependencies:
+      - package: OpenAgentHand
+        product: OpenAgentHandCore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.openagenthand.demo
+        TARGETED_DEVICE_FAMILY: "1,2"
+  OpenAgentHandMac:
+    type: application
+    platform: macOS
+    sources: App
+    dependencies:
+      - package: OpenAgentHand
+        product: OpenAgentHandCore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.openagenthand.demo.mac
+        INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.developer-tools
+  OpenAgentHandUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources: UITests
+    dependencies:
+      - target: OpenAgentHand
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.openagenthand.demo.uitests
+schemes:
+  OpenAgentHand:
+    build:
+      targets:
+        OpenAgentHand: all
+    test:
+      targets: [OpenAgentHandUITests]
+  OpenAgentHandMac:
+    build:
+      targets:
+        OpenAgentHandMac: all

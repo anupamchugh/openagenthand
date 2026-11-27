@@ -1,0 +1,12 @@
+Open Agent Hand
+Copyright 2026 Anupam Chugh
+
+This project includes a converted Shadow Dexterous Hand model from MuJoCo
+Menagerie, from the shadow_hand directory at commit b065505. The upstream model
+and meshes are licensed under Apache-2.0:
+https://github.com/google-deepmind/mujoco_menagerie/tree/b065505/shadow_hand
+
+The converted USDZ keeps the visual geometry and the rest transforms. It omits
+the physics, collision geometry and actuators. The application drives the
+visual links with its own finger poses. See Licenses/MuJoCo-Menagerie-Shadow-Hand.txt
+for the upstream license and App/Resources/ShadowHand.usdz for the derivative.
