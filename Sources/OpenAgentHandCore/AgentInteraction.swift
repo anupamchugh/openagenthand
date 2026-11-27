@@ -83,6 +83,9 @@ public struct AgentSnapshot: Codable, Equatable, Sendable {
 
 /// A held contact selects one finger. Brief, ambiguous and repeated contacts are ignored.
 public struct PinchRecognizer: Sendable {
+    private static let fingers: [(Agent, HandJoints.Name)] = [
+        (.researcher, .indexTip), (.builder, .middleTip), (.reviewer, .ringTip), (.tester, .littleTip),
+    ]
     private var candidate: Agent?
     private var candidateSince: TimeInterval = 0
     private var releasedSince: TimeInterval?
@@ -91,25 +94,23 @@ public struct PinchRecognizer: Sendable {
 
     public init() {}
 
+    public static func canTrack(_ hand: HandJoints) -> Bool {
+        guard let palm = hand.palmLength, palm > 0.02, hand[.thumbTip] != nil else { return false }
+        return fingers.count { hand[$0.1] != nil } >= 2
+    }
+
     public mutating func update(_ hand: HandJoints?, at time: TimeInterval) -> Agent? {
         if let lastFrame, time <= lastFrame || time - lastFrame > 0.25 {
             self = Self()
         }
         lastFrame = time
-        let fingers: [(Agent, HandJoints.Name)] = [
-            (.researcher, .indexTip), (.builder, .middleTip), (.reviewer, .ringTip), (.tester, .littleTip),
-        ]
-        guard let hand, let palm = hand.palmLength, palm > 0.02, let thumb = hand[.thumbTip] else {
+        guard let hand, Self.canTrack(hand), let palm = hand.palmLength, let thumb = hand[.thumbTip] else {
             self = Self()
             return nil
         }
-        let distances = fingers.compactMap { agent, joint in
+        let distances = Self.fingers.compactMap { agent, joint in
             hand[joint].map { (agent, hypot(thumb.x - $0.x, thumb.y - $0.y) / palm) }
         }.sorted { $0.1 < $1.1 }
-        guard distances.count == fingers.count else {
-            self = Self()
-            return nil
-        }
         let (nearest, distance) = distances[0]
         if distance > 0.30 {
             candidate = nil

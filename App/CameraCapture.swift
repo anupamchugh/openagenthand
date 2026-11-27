@@ -91,7 +91,7 @@ final class CameraCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelegat
         let orientation = CGImagePropertyOrientation.leftMirrored
         #endif
         let observations = (try? HandDetector.hands(in: pixels, orientation: orientation, maximum: 2)) ?? []
-        let reliable = observations.filter(\.isReliable)
-        continuation.yield(Frame(time: time, hand: reliable.count == 1 ? reliable.first : nil))
+        let tracked = observations.filter(PinchRecognizer.canTrack)
+        continuation.yield(Frame(time: time, hand: tracked.count == 1 ? tracked.first : nil))
     }
 }

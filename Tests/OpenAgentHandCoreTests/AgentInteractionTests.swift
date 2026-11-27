@@ -47,6 +47,19 @@ struct AgentInteractionTests {
         #expect(recognizer.update(ring, at: 0.80) == nil)
     }
 
+    @Test func aRingPinchCanStayVisibleWhenVisionLosesUnrelatedTips() {
+        var recognizer = PinchRecognizer()
+        let open = joints(thumbX: 0.05, thumbY: 0.4)
+        var ring = joints(thumbX: 0.58, thumbY: 0.8)
+        ring.points[.indexTip] = nil
+        ring.points[.littleTip] = nil
+        #expect(PinchRecognizer.canTrack(ring))
+        _ = recognizer.update(open, at: 0)
+        _ = recognizer.update(open, at: 0.14)
+        #expect(recognizer.update(ring, at: 0.20) == nil)
+        #expect(recognizer.update(ring, at: 0.40) == .reviewer)
+    }
+
     private let positions: [Agent: CGFloat] = [.researcher: 0.15, .builder: 0.4, .reviewer: 0.58, .tester: 0.83]
 
     private func joints(thumbX: CGFloat, thumbY: CGFloat) -> HandJoints {

@@ -51,6 +51,7 @@ private struct AgentHandView: View {
     @State private var cameraStatus = "Camera off"
     @State private var cameraName = ""
     @State private var lastPinch: Agent?
+    @State private var hasSeenHand = false
     @State private var showCameraPose = false
     @State private var cameraPose: HandPose?
     @State private var exchange: Exchange?
@@ -214,8 +215,8 @@ private struct AgentHandView: View {
                 }
             }
             Text(mode == .hello
-                 ? "Show an open hand, then pinch thumb to index or ring. Both agents also have buttons."
-                 : "Show an open hand, then pinch thumb to a fingertip to inspect that agent. Use the button for the thumb role.")
+                 ? "Hold one hand in view with thumb apart. Touch thumb to index or ring. Both agents also have buttons."
+                 : "Hold one hand in view with thumb apart, then touch a fingertip to inspect that agent. Use the button for the thumb role.")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
@@ -342,6 +343,7 @@ private struct AgentHandView: View {
         cameraPose = nil
         cameraName = ""
         lastPinch = nil
+        hasSeenHand = false
         cameraStatus = "Camera off"
     }
 
@@ -358,7 +360,15 @@ private struct AgentHandView: View {
                 guard !Task.isCancelled else { break }
                 let pose = frame.hand.flatMap(HandPose.init)
                 if showCameraPose { cameraPose = pose }
-                let status = frame.hand == nil ? "Camera frames live · show one hand" : "Tracking your hand"
+                let status: String
+                if frame.hand != nil {
+                    hasSeenHand = true
+                    status = "Hand detected · hold a pinch"
+                } else if hasSeenHand {
+                    status = "Hand seen earlier · bring one hand back into view"
+                } else {
+                    status = "Camera frames live · no hand seen yet"
+                }
                 if cameraStatus != status { cameraStatus = status }
                 if let agent = recognizer.update(frame.hand, at: frame.time) {
                     lastPinch = agent
