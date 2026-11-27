@@ -2,6 +2,10 @@
 
 A gesture interface for inspecting and directing agents on macOS and iOS. Each finger can show an agent's state. Pinching selects an agent, and the app shows the message or event before you choose what to do.
 
+<img src="docs/hello-world.png" width="270" alt="Open Agent Hand showing the robot hand and the Greeter and Receiver controls"> <img src="docs/receiver-evidence.png" width="270" alt="The Receiver evidence card shows Hello, world! as the received message and Hello back! as the reply">
+
+*iPhone simulator captures of the offline Hello World demo. The Receiver card was opened with the on-screen button.*
+
 ## Run the demo
 
 Use Xcode 16 or later with XcodeGen. The app builds for macOS 15 and iOS 18 or later. Open the generated project and choose the Mac or iOS scheme. A physical iPhone needs a development team selected in Xcode.
